@@ -9,8 +9,8 @@ body {
 
 header {
 	display: flex;
-	/* justify-content: space-between; */
-	justify-content: center;
+	justify-content: space-between;
+	/*justify-content: center;*/
 	align-items: center;
 	height: 5%;
 }
@@ -67,7 +67,7 @@ footer {
 	padding: 10px;
 }
 
-.miBoton {
+.myButton {
 	font-size: 14px;
 	display: inline-block;
 	padding: 0.7em 1.4em;
@@ -84,11 +84,11 @@ footer {
 	text-align: center;
 	position: relative;
 }
-.miBoton:active{
+.myButton:active{
 	top: 0.1em;
 }
 @media all and (max-width:15em){
-	.miBoton{
+	.myButton{
 		display: block;
 		margin: 0.4em auto;
 	}
