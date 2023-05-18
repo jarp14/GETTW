@@ -86,22 +86,21 @@ $(go.Adornment,
 var nodeTemplate_shape =
 $(go.Node, "Spot",
 	{ locationSpot: go.Spot.Center },
-	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // importante para replicar la información a través del servidor
+	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+	new go.Binding("angle").makeTwoWay(),
 	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
 	{ resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeRedimensionTemplate },
 	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
-	new go.Binding("angle").makeTwoWay(),
-	// el objeto principal es un panel que contiene un texto dentro de una forma
 	$(go.Panel, "Auto",
 		{ name: "PANEL" },
-		new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-		$(go.Shape, "Rectangle",  // figura por defecto
+		new go.Binding("desiredSize", "shapeSize", go.Size.parse).makeTwoWay(go.Size.stringify),
+		$(go.Shape, "Rectangle",
 			{
 				portId: "", // puerto por defecto: si no hay lugar en los datos del enlace, se usa el lado más cercano
 				fromLinkable: false, 
 				toLinkable: false, 
 				cursor: "grab",
-				fill: "white",  // color por defecto
+				fill: "white",
 				strokeWidth: 2,
 				stretch: go.GraphObject.Fill
 			},
@@ -109,17 +108,159 @@ $(go.Node, "Spot",
 			new go.Binding("fill"),
 			new go.Binding("strokeWidth"),
 			new go.Binding("width"),
-			new go.Binding("height")),
-		$(go.TextBlock, // texto
+			new go.Binding("height")
+		),
+		$(go.TextBlock,
 			{
-				font: "18pt Roboto, sans-serif, Arial, Helvetica",
-				margin: 8,
+				font: "16pt Roboto, sans-serif, Arial, Helvetica",
+				margin: 20,
 				cursor: "grab",
-				//maxSize: new go.Size(160, NaN),
 				wrap: go.TextBlock.WrapFit,
 				editable: true
 			},
-		new go.Binding("text").makeTwoWay())
+			new go.Binding("font"),
+			new go.Binding("editable"),
+			new go.Binding("text").makeTwoWay()
+		)
+	),
+	// cuatro pequeños "puertos", uno para cada lado del nodo
+	createPort("T", go.Spot.Top, false, true),
+	createPort("L", go.Spot.Left, true, true),
+	createPort("R", go.Spot.Right, true, true),
+	createPort("B", go.Spot.Bottom, true, false),
+	{ // se asocia los eventos entrar/salir para mostrar/ocultar dichos "puertos"
+		mouseEnter: function(e, nodo) { showPorts(nodo, true); },
+		mouseLeave: function(e, nodo) { showPorts(nodo, false); }
+	}
+);
+
+
+// Plantilla Nodo: Forma + texto y superindex
+var nodeTemplate_shapeTextSup =
+$(go.Node, "Spot",
+	{ locationSpot: go.Spot.Center },
+	new go.Binding("angle").makeTwoWay(),
+	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
+	{ resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeRedimensionTemplate },
+	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
+	$(go.Panel, "Auto",
+		{ name: "PANEL" },
+		new go.Binding("desiredSize", "shapeSize", go.Size.parse).makeTwoWay(go.Size.stringify),
+		$(go.Shape, "Rectangle",
+			{
+				portId: "",
+				fromLinkable: false, 
+				toLinkable: false, 
+				cursor: "grab",
+				fill: "white",
+				strokeWidth: 2,
+				stretch: go.GraphObject.Fill
+			},
+			new go.Binding("figure"),
+			new go.Binding("fill"),
+			new go.Binding("strokeWidth"),
+			new go.Binding("width"),
+			new go.Binding("height")
+		),
+		$(go.Panel, "Horizontal",
+			$(go.TextBlock,
+				{
+					font: "16pt Roboto, sans-serif, Arial, Helvetica",
+					margin: 20,
+					minSize: new go.Size(5, 30),
+					wrap: go.TextBlock.WrapFit,
+					editable: true,
+					verticalAlignment: go.Spot.Center,
+					margin: 1,
+					cursor: "grab",
+					text: "e"
+				},
+				new go.Binding("text").makeTwoWay()
+			),
+			$(go.TextBlock, // superindice
+				{
+					font: "12pt Roboto, sans-serif, Arial, Helvetica",
+					margin: 4,
+					minSize: new go.Size(5, 30),
+					wrap: go.TextBlock.WrapFit,
+					editable: true,
+					verticalAlignment: go.Spot.Top,
+					cursor: "grab",
+					text: "x"
+				},
+				new go.Binding("text", "superindex").makeTwoWay()
+			)
+		),
+	),
+	// cuatro pequeños "puertos", uno para cada lado del nodo
+	createPort("T", go.Spot.Top, false, true),
+	createPort("L", go.Spot.Left, true, true),
+	createPort("R", go.Spot.Right, true, true),
+	createPort("B", go.Spot.Bottom, true, false),
+	{ // se asocia los eventos entrar/salir para mostrar/ocultar dichos "puertos"
+		mouseEnter: function(e, nodo) { showPorts(nodo, true); },
+		mouseLeave: function(e, nodo) { showPorts(nodo, false); }
+	}
+);
+
+// Plantilla Nodo: Forma + texto y subindex
+var nodeTemplate_shapeTextSub =
+$(go.Node, "Spot",
+	{ locationSpot: go.Spot.Center },
+	new go.Binding("angle").makeTwoWay(),
+	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
+	{ resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeRedimensionTemplate },
+	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
+	$(go.Panel, "Auto",
+		{ name: "PANEL" },
+		new go.Binding("desiredSize", "shapeSize", go.Size.parse).makeTwoWay(go.Size.stringify),
+		$(go.Shape, "Rectangle",
+			{
+				portId: "",
+				fromLinkable: false, 
+				toLinkable: false, 
+				cursor: "grab",
+				fill: "white",
+				strokeWidth: 2,
+				stretch: go.GraphObject.Fill
+			},
+			new go.Binding("figure"),
+			new go.Binding("fill"),
+			new go.Binding("strokeWidth"),
+			new go.Binding("width"),
+			new go.Binding("height")
+		),
+		$(go.Panel, "Horizontal",
+			$(go.TextBlock,
+				{
+					font: "16pt Roboto, sans-serif, Arial, Helvetica",
+					margin: 20,
+					minSize: new go.Size(5, 30),
+					wrap: go.TextBlock.WrapFit,
+					editable: true,
+					verticalAlignment: go.Spot.Center,
+					margin: 1,
+					cursor: "grab",
+					text: "e"
+				},
+				new go.Binding("text").makeTwoWay()
+			),
+			$(go.TextBlock, // superindice
+				{
+					font: "12pt Roboto, sans-serif, Arial, Helvetica",
+					margin: 4,
+					minSize: new go.Size(5, 30),
+					wrap: go.TextBlock.WrapFit,
+					editable: true,
+					verticalAlignment: go.Spot.Bottom,
+					cursor: "grab",
+					text: "x"
+				},
+				new go.Binding("text", "superindex").makeTwoWay()
+			)
+		),
 	),
 	// cuatro pequeños "puertos", uno para cada lado del nodo
 	createPort("T", go.Spot.Top, false, true),
@@ -136,26 +277,26 @@ $(go.Node, "Spot",
 var nodeTemplate_picture =
 $(go.Node, "Spot",
 	{ locationSpot: go.Spot.Center },
-	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // importante para replicar la información a través del servidor
+	new go.Binding("angle").makeTwoWay(),
+	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
 	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
 	{ resizable: true, resizeObjectName: "FIGURA", resizeAdornmentTemplate: nodeRedimensionTemplate },
 	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
-	new go.Binding("angle").makeTwoWay(),
-	// el objeto principal es un panel que contiene un texto debajo de una figura
 	$(go.Panel, "Vertical",
-		//new go.Binding("desiredSize", "pictureSize", go.Size.parse).makeTwoWay(go.Size.stringify), // no funciona, revisar!!!!!!!!
 		$(go.Picture,
 			{
 				name: "FIGURA",
-				desiredSize: new go.Size(16, 16), // tamaño por defecto
+				width: 64,
+				height: 64,
 				imageStretch: go.GraphObject.Fill,
 				cursor: "grab",
 				margin: 2,
 				
 			},
 			new go.Binding("source"),
-			new go.Binding("desiredSize")
-		)
+			new go.Binding("width").makeTwoWay(),
+			new go.Binding("height").makeTwoWay()
+		),
 	),
 	// cuatro pequeños "puertos", uno para cada lado del nodo
 	createPort("T", go.Spot.Top, false, true),
@@ -172,31 +313,31 @@ $(go.Node, "Spot",
 var nodeTemplate_pictureText =
 $(go.Node, "Spot",
 	{ locationSpot: go.Spot.Center },
+	new go.Binding("angle").makeTwoWay(),
 	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // importante para replicar la información a través del servidor
 	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
 	{ resizable: true, resizeObjectName: "FIGURA_TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
 	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
-	new go.Binding("angle").makeTwoWay(),
-	// el objeto principal es un panel que contiene un texto debajo de una figura
 	$(go.Panel, "Vertical",
-		//new go.Binding("desiredSize", "pictureSize", go.Size.parse).makeTwoWay(go.Size.stringify), // no funciona, revisar!!!!!!!!
 		$(go.Picture,
 			{
 				name: "FIGURA_TEXTO",
-				desiredSize: new go.Size(16, 16), // tamaño por defecto
+				width: 64,
+				height: 64,
 				imageStretch: go.GraphObject.Fill,
 				cursor: "grab",
 				margin: 2,
 				
 			},
 			new go.Binding("source"),
-			new go.Binding("desiredSize")),
-		$(go.TextBlock, // texto
+			new go.Binding("width").makeTwoWay(),
+			new go.Binding("height").makeTwoWay()
+		),
+		$(go.TextBlock,
 			{
-				font: "18pt Roboto, sans-serif, Arial, Helvetica",
+				font: "16pt Roboto, sans-serif, Arial, Helvetica",
 				margin: 2,
 				cursor: "grab",
-				maxSize: new go.Size(160, NaN),
 				wrap: go.TextBlock.WrapFit,
 				editable: true
 			},
@@ -218,20 +359,17 @@ $(go.Node, "Spot",
 var nodeTemplate_textblock =
 $(go.Node, "Spot",
 	{ locationSpot: go.Spot.Center },
-	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // importante para replicar la información a través del servidor
-	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
-	{ resizable: true, resizeObjectName: "TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
-	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
 	new go.Binding("angle").makeTwoWay(),
-	// el objeto principal es un panel que contiene un texto debajo de una figura
+	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
+	// { resizable: true, resizeObjectName: "TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
+	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
 	$(go.Panel, "Vertical",
-		//new go.Binding("desiredSize", "pictureSize", go.Size.parse).makeTwoWay(go.Size.stringify), // no funciona, revisar!!!!!!!!
-		$(go.TextBlock, // texto
+		$(go.TextBlock,
 			{
-				font: "18pt Roboto, sans-serif, Arial, Helvetica",
-				margin: 2,
+				font: "16pt Roboto, sans-serif, Arial, Helvetica",
+				margin: 20,
 				cursor: "grab",
-				maxSize: new go.Size(160, NaN),
 				wrap: go.TextBlock.WrapFit,
 				editable: true,
 				text: "Text"
@@ -254,19 +392,16 @@ $(go.Node, "Spot",
 var nodeTemplate_textblockSubindex =
 $(go.Node, "Spot",
 	{ locationSpot: go.Spot.Center },
+	new go.Binding("angle").makeTwoWay(),
 	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // importante para replicar la información a través del servidor
 	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
-	{ resizable: true, resizeObjectName: "TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
+	// { resizable: true, resizeObjectName: "TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
 	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
-	new go.Binding("angle").makeTwoWay(),
-	// el objeto principal es un panel que contiene un texto debajo de una figura
 	$(go.Panel, "Horizontal",
-		//new go.Binding("desiredSize", "pictureSize", go.Size.parse).makeTwoWay(go.Size.stringify), // no funciona, revisar!!!!!!!!
-		$(go.TextBlock, // texto
+		$(go.TextBlock, 
 			{
-				font: "18pt Roboto, sans-serif, Arial, Helvetica",
-				margin: 2,
-				maxSize: new go.Size(300, 30),
+				font: "16pt Roboto, sans-serif, Arial, Helvetica",
+				margin: 20,
 				minSize: new go.Size(5, 30),
 				wrap: go.TextBlock.WrapFit,
 				editable: true,
@@ -279,9 +414,8 @@ $(go.Node, "Spot",
 		),
 		$(go.TextBlock, // subindice
 			{
-				font: "14pt Roboto, sans-serif, Arial, Helvetica",
-				margin: 2,
-				maxSize: new go.Size(300, 30),
+				font: "12pt Roboto, sans-serif, Arial, Helvetica",
+				margin: 4,
 				minSize: new go.Size(5, 30),
 				wrap: go.TextBlock.WrapFit,
 				editable: true,
@@ -307,19 +441,16 @@ $(go.Node, "Spot",
 var nodeTemplate_textblockSuperindex =
 $(go.Node, "Spot",
 	{ locationSpot: go.Spot.Center },
-	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // importante para replicar la información a través del servidor
-	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
-	{ resizable: true, resizeObjectName: "TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
-	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
 	new go.Binding("angle").makeTwoWay(),
-	// el objeto principal es un panel que contiene un texto debajo de una figura
+	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
+	// { resizable: true, resizeObjectName: "TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
+	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
 	$(go.Panel, "Horizontal",
-		//new go.Binding("desiredSize", "pictureSize", go.Size.parse).makeTwoWay(go.Size.stringify), // no funciona, revisar!!!!!!!!
-		$(go.TextBlock, // texto
+		$(go.TextBlock,
 			{
-				font: "18pt Roboto, sans-serif, Arial, Helvetica",
-				margin: 2,
-				maxSize: new go.Size(300, 30),
+				font: "16pt Roboto, sans-serif, Arial, Helvetica",
+				margin: 20,
 				minSize: new go.Size(5, 30),
 				wrap: go.TextBlock.WrapFit,
 				editable: true,
@@ -332,9 +463,8 @@ $(go.Node, "Spot",
 		),
 		$(go.TextBlock, // superindice
 			{
-				font: "14pt Roboto, sans-serif, Arial, Helvetica",
-				margin: 2,
-				maxSize: new go.Size(300, 30),
+				font: "12pt Roboto, sans-serif, Arial, Helvetica",
+				margin: 4,
 				minSize: new go.Size(5, 30),
 				wrap: go.TextBlock.WrapFit,
 				editable: true,
@@ -360,19 +490,16 @@ $(go.Node, "Spot",
 var nodeTemplate_textblockSubSuperindexes =
 $(go.Node, "Spot",
 	{ locationSpot: go.Spot.Center },
-	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify), // importante para replicar la información a través del servidor
-	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
-	{ resizable: true, resizeObjectName: "TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
-	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
 	new go.Binding("angle").makeTwoWay(),
-	// el objeto principal es un panel que contiene un texto debajo de una figura
+	new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+	{ selectable: true, selectionAdornmentTemplate: nodeSelectionTemplate },
+	// { resizable: true, resizeObjectName: "TEXTO", resizeAdornmentTemplate: nodeRedimensionTemplate },
+	{ rotatable: true, rotateAdornmentTemplate: nodeRotationTemplate },
 	$(go.Panel, "Horizontal",
-		//new go.Binding("desiredSize", "pictureSize", go.Size.parse).makeTwoWay(go.Size.stringify), // no funciona, revisar!!!!!!!!
-		$(go.TextBlock, // texto
+		$(go.TextBlock,
 			{
-				font: "18pt Roboto, sans-serif, Arial, Helvetica",
-				margin: 2,
-				maxSize: new go.Size(300, 40),
+				font: "16pt Roboto, sans-serif, Arial, Helvetica",
+				margin: 20,
 				minSize: new go.Size(5, 40),
 				wrap: go.TextBlock.WrapFit,
 				editable: true,
@@ -386,9 +513,8 @@ $(go.Node, "Spot",
 		$(go.Panel, "Vertical",
 			$(go.TextBlock, // superindice
 				{
-					font: "14pt Roboto, sans-serif, Arial, Helvetica",
-					margin: 1,
-					maxSize: new go.Size(300, 30),
+					font: "12pt Roboto, sans-serif, Arial, Helvetica",
+					margin: 2,
 					minSize: new go.Size(5, 5),
 					wrap: go.TextBlock.WrapFit,
 					editable: true,
@@ -400,9 +526,8 @@ $(go.Node, "Spot",
 			),
 			$(go.TextBlock, // subindice
 				{
-					font: "14pt Roboto, sans-serif, Arial, Helvetica",
-					margin: 1,
-					maxSize: new go.Size(300, 30),
+					font: "12pt Roboto, sans-serif, Arial, Helvetica",
+					margin: 2,
 					minSize: new go.Size(5, 5),
 					wrap: go.TextBlock.WrapFit,
 					editable: true,
@@ -428,6 +553,8 @@ $(go.Node, "Spot",
 // Como se hace uso de diferentes plantillas de nodos es necesario guardarlas y asociarlas al diagrama
 var nodesTemplates = new go.Map();
 nodesTemplates.add("shape", nodeTemplate_shape);
+nodesTemplates.add("shape_textSup", nodeTemplate_shapeTextSup);
+nodesTemplates.add("shape_textSub", nodeTemplate_shapeTextSub);
 nodesTemplates.add("picture", nodeTemplate_picture);
 nodesTemplates.add("picture_text", nodeTemplate_pictureText);
 nodesTemplates.add("textblock", nodeTemplate_textblock);
@@ -480,7 +607,7 @@ $(go.Link,
 			{
 				textAlign: "center",
 				cursor: "grab",
-				font: "8pt helvetica, arial, sans-serif",
+				font: "10pt Roboto, sans-serif, Arial, Helvetica",
 				stroke: "#919191",
 				margin: 4,
 				minSize: new go.Size(10, NaN),
@@ -521,20 +648,21 @@ function createPalettes(nodeSize) {
 			nodeTemplateMap: diagram.nodeTemplateMap,  // se asocian las plantillas de los nodos
 			linkTemplateMap: diagram.linkTemplateMap,	// se asocian las plantillas de los enlaces
 			model: new go.GraphLinksModel([  // contenidos de la paleta
-				// nodos
-				// { text: "Picture", source: "file:///C:/Users/YoelA/OneDrive/Escritorio/Pictos_QueHacemosHoy/Bañarse.png", desiredSize: new go.Size(128, 128), category: "picture" },
-				{ text: "Entity", figure: "Rectangle", fill: "lightskyblue", category: "shape" },
-				{ text: "Relation", figure: "Diamond", fill: "lightskyblue",  category: "shape" },
-				{ text: "Attribute", figure: "Ellipse", fill: "lightskyblue", category: "shape" },
-				{ text: "", source: "images/Comprar.png", desiredSize: new go.Size(128, 128), category: "picture" },
-				{ text: "Text", source: "images/Bañarse.png", desiredSize: new go.Size(128, 128), category: "picture_text" },
-				{ text: "Text", category: "textblock" },
-				{ text: "Formulae", subindex: "sub", category: "textblock_subindex" },
-				{ text: "Formulae", superindex: "sup", category: "textblock_superindex" },
-				{ text: "Formulae", superindex: "sup", subindex: "sub", category: "textblock_subsuperindexes" },
-			], [ // enlaces 
-				
-			])
+					// nodos
+					// { text: "Picture", source: "file:///C:/Users/YoelA/OneDrive/Escritorio/Pictos_QueHacemosHoy/Bañarse.png", desiredSize: new go.Size(128, 128), category: "picture" },
+					{ text: "Entity", figure: "Rectangle", fill: "lightskyblue", font: "16pt Roboto, sans-serif, Arial, Helvetica", editable: false, category: "shape" },
+					{ text: "Relation", figure: "Diamond", fill: "lightskyblue",  category: "shape_textSup" },
+					{ text: "Attribute", figure: "Ellipse", fill: "lightskyblue", category: "shape" },
+					{ text: "", source: "images/Comprar.png", width: nodeSize, height: nodeSize, category: "picture" },
+					{ text: "Text", source: "images/Bañarse.png", width: nodeSize, height: nodeSize, category: "picture_text" },
+					{ text: "Text", category: "textblock" },
+					{ text: "Formulae", subindex: "sub", category: "textblock_subindex" },
+					{ text: "Formulae", superindex: "sup", category: "textblock_superindex" },
+					{ text: "Formulae", superindex: "sup", subindex: "sub", category: "textblock_subsuperindexes" },
+				], [ 
+					// enlaces 
+				]
+			)
 		}
 	);
 
@@ -545,38 +673,34 @@ function createPalettes(nodeSize) {
 			nodeTemplateMap: diagram.nodeTemplateMap,  // se asocian las plantillas de los nodos
 			linkTemplateMap: diagram.linkTemplateMap,	// se asocian las plantillas de los enlaces
 			model: new go.GraphLinksModel([  // contenidos de la paleta
-				//nodos
-			], [ // enlaces 
-				{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
-				fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
-				toArrowShape: "", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-				{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
-				fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
-				toArrowShape: "Line", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-				{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
-				fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
-				toArrowShape: "LineCircle", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-				{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
-				fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
-				toArrowShape: "DoubleLine", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-				{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
-				fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
-				toArrowShape: "Fork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-				{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
-				fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
-				toArrowShape: "CircleFork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-				{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
-				fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
-				toArrowShape: "LineFork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-			])
+						//nodos
+				], [ 	// enlaces 
+					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
+						toArrowShape: "", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
+					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
+						toArrowShape: "Line", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
+					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
+						toArrowShape: "LineCircle", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
+					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
+						toArrowShape: "DoubleLine", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
+					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
+						toArrowShape: "Fork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
+					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
+						toArrowShape: "CircleFork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
+					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
+						toArrowShape: "LineFork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
+				]
+			)
 		}
 	);
 }
-
-// RadarView
-var myOverview =
-  $(go.Overview, "divOverview",
-    { observed: diagram });
 
 /***
 	COMUNICACIÓN CLIENTE-SERVIDOR
@@ -601,7 +725,7 @@ TogetherJS.hub.on("content-send", function(msg) {
 		return;
 	}
 	diagram.model.applyIncrementalJson(msg.output);
-	diagram.layoutDiagram(true);
+	//diagram.layoutDiagram(true);
 	//diagram.isModified = false;
 	console.log(msg.output);
 });

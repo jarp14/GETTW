@@ -33,14 +33,6 @@ header {
 	-webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
-#divOverview {
-	position: relative;
-	top: 0;
-	right: 0;
-	width: 60px;
-	height: 60px;
-}
-
 #palettesContainer {
 	width: 100%;
 	overflow: hidden;
