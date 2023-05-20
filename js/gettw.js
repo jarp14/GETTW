@@ -578,31 +578,28 @@ $(go.Link,
 	{ selectable: true, selectionAdornmentTemplate: plantillaSeleccionEnlace },
 	{ relinkableFrom: true, relinkableTo: true, reshapable: true },
 	{
-		routing: go.Link.Orthogonal,
-		curve: go.Link.JumpOver,
-		corner: 5,
-		toShortLength: 4
+		routing: go.Link.AvoidsNodes,
+		curve: go.Link.JumpGap,
 	},
 	new go.Binding("points").makeTwoWay(),
 	$(go.Shape, // la forma de la línea
 		{ isPanelMain: true },
 		new go.Binding("stroke", "linkStrokeColor"),
-	new go.Binding("strokeWidth", "linkStrokeWidth")),
+		new go.Binding("strokeWidth", "linkStrokeWidth")),
 	$(go.Shape,  // la forma de la flecha origen
 		new go.Binding("fromArrow", "fromArrowShape"),
 		new go.Binding("stroke", "fromArrowStrokeColor"),
 		new go.Binding("fill", "fromArrowColor"),
-	new go.Binding("strokeWidth", "fromArrowStrokeWidth")),
+		new go.Binding("strokeWidth", "fromArrowStrokeWidth")),
 	$(go.Shape,  // la forma de la flecha destino
 		new go.Binding("toArrow", "toArrowShape"),
 		new go.Binding("stroke", "toArrowStrokeColor"),
 		new go.Binding("fill", "toArrowColor"),
-	new go.Binding("strokeWidth", "toArrowStrokeWidth")),
+		new go.Binding("strokeWidth", "toArrowStrokeWidth")),
 	$(go.Panel, "Auto",
 		//new go.Binding("visible", "isSelected").ofObject(),
 		$(go.Shape, "RoundedRectangle",  // la forma del texto del enlace
-		{ fill: "transparent", stroke: null,
-			cursor: "grab" }),
+			{ fill: "transparent", stroke: null, cursor: "grab" }),
 		$(go.TextBlock, // texto del enlace, editable
 			{
 				textAlign: "center",
@@ -610,14 +607,13 @@ $(go.Link,
 				font: "10pt Roboto, sans-serif, Arial, Helvetica",
 				stroke: "#919191",
 				margin: 4,
-				minSize: new go.Size(10, NaN),
+				minSize: new go.Size(10, 100),
 				editable: true
 			},
 		new go.Binding("text").makeTwoWay())
 	)
 );
 
-// Como se hace uso de diferentes plantillas de enlaces es necesario guardarlas y asociarlas al diagrama
 var linksTemplates = new go.Map();
 // plantillasEnlaces.add("unaFlecha", plantillaEnlaceUnaFlecha);
 linksTemplates.add("link", linksTemplate);
@@ -675,25 +671,25 @@ function createPalettes(nodeSize) {
 			model: new go.GraphLinksModel([  // contenidos de la paleta
 						//nodos
 				], [ 	// enlaces 
-					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+					{ points: new go.List().addAll([new go.Point(-20, 20), new go.Point(20, -20)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
 						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
 						toArrowShape: "", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+					{ points: new go.List().addAll([new go.Point(-20, 20), new go.Point(20, -20)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
 						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
 						toArrowShape: "Line", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+					{ points: new go.List().addAll([new go.Point(-20, 20), new go.Point(20, -20)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
 						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
 						toArrowShape: "LineCircle", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+					{ points: new go.List().addAll([new go.Point(-20, 20), new go.Point(20, -20)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
 						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
 						toArrowShape: "DoubleLine", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+					{ points: new go.List().addAll([new go.Point(-20, 20), new go.Point(20, -20)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
 						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
 						toArrowShape: "Fork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+					{ points: new go.List().addAll([new go.Point(-20, 20), new go.Point(20, -20)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
 						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
 						toArrowShape: "CircleFork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
-					{ points: new go.List().addAll([new go.Point(-30, 30), new go.Point(30, -30)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
+					{ points: new go.List().addAll([new go.Point(-20, 20), new go.Point(20, -20)]), linkStrokeColor: "black", linkStrokeWidth: "2", 
 						fromArrowShape: "", fromArrowColor: "black", fromArrowStrokeColor: "black", fromArrowStrokeWidth: "2", 
 						toArrowShape: "LineFork", toArrowColor: "white", toArrowStrokeWidth: "2", category: "link" },
 				]
